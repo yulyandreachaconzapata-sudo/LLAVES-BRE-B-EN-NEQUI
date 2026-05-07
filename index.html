@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Nequi - Llaves Digitales</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --nequi-magenta: #DE287E;
+            --nequi-purple: #512984;
+            --nequi-teal: #00D1C1;
+            --nequi-light: #F9F9F9;
+            --text-dark: #1F1F1F;
+            --sidebar-width: 300px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            background-color: #f0f2f5; 
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-dark);
+            scroll-behavior: smooth;
+        }
+
+        /* BARRA DE PROGRESO DE LECTURA */
+        .progress-container {
+            position: fixed; top: 0; z-index: 100; width: 100%; height: 8px; background: #ccc;
+        }
+        .progress-bar {
+            height: 8px; background: var(--nequi-magenta); width: 0%;
+        }
+
+        /* NAVEGACIÓN TIPO BLOG */
+        nav {
+            background: #fff; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 90;
+        }
+        .logo { font-family: 'Comfortaa'; font-weight: 700; color: var(--nequi-purple); font-size: 24px; }
+        .logo span { color: var(--nequi-magenta); }
+
+        /* CONTENEDOR PRINCIPAL */
+        .blog-layout {
+            max-width: 1200px; margin: 40px auto; display: grid; grid-template-columns: 1fr var(--sidebar-width); gap: 40px; padding: 0 20px;
+        }
+
+        /* CONTENIDO DE LAS DIAPOSITIVAS */
+        .post-content { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        
+        .slide {
+            padding: 80px 60px; border-bottom: 2px solid #f0f0f0; min-height: 500px; display: flex; flex-direction: column; justify-content: center;
+            opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out;
+        }
+        .slide.visible { opacity: 1; transform: translateY(0); }
+
+        .slide-tag { 
+            background: var(--nequi-magenta); color: #fff; padding: 5px 15px; border-radius: 50px; 
+            font-size: 12px; font-weight: 700; text-transform: uppercase; align-self: flex-start; margin-bottom: 20px;
+        }
+
+        h1 { font-family: 'Comfortaa'; font-size: 48px; color: var(--nequi-purple); margin-bottom: 25px; line-height: 1.2; }
+        h2 { font-family: 'Comfortaa'; font-size: 32px; color: var(--nequi-magenta); margin-bottom: 20px; }
+        p { font-size: 18px; line-height: 1.8; color: #444; margin-bottom: 20px; }
+
+        .featured-image { width: 100%; height: 400px; object-fit: cover; background: #eee; }
+
+        /* CITAS Y BLOQUES ESPECIALES */
+        .quote-block {
+            border-left: 6px solid var(--nequi-teal); padding: 20px 30px; background: #f0fdfc; margin: 30px 0; font-style: italic; font-size: 20px;
+        }
+
+        .step-card {
+            background: var(--nequi-light); padding: 25px; border-radius: 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 20px;
+            border: 1px solid #eee;
+        }
+        .step-number { 
+            background: var(--nequi-purple); color: #fff; width: 40px; height: 40px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;
+        }
+
+        /* SIDEBAR */
+        .sidebar { position: sticky; top: 120px; height: fit-content; }
+        .author-box { background: #fff; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .author-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--nequi-magenta); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 30px; }
+        
+        .related-box { background: var(--nequi-purple); color: #fff; padding: 30px; border-radius: 20px; margin-top: 20px; }
+        .cta-button { 
+            display: block; width: 100%; padding: 15px; background: var(--nequi-teal); color: var(--nequi-purple); 
+            text-align: center; text-decoration: none; border-radius: 50px; font-weight: 700; margin-top: 20px; transition: transform 0.2s;
+        }
+        .cta-button:hover { transform: scale(1.05); }
+
+        /* FOOTER BLOG */
+        .blog-footer { text-align: center; padding: 60px; background: #fff; margin-top: 40px; border-top: 1px solid #eee; }
+
+        @media (max-width: 900px) {
+            .blog-layout { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="myBar"></div>
+    </div>
+
+    <nav>
+        <div class="logo">NE<span>QUI</span> BLOG</div>
+        <div><i class="fa-solid fa-magnifying-glass"></i></div>
+    </nav>
+
+    <div class="blog-layout">
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="post-content">
+            <!-- Portada -->
+            <div class="slide visible" id="intro">
+                <span class="slide-tag">Tendencias</span>
+                <h1>Adiós a los números de cuenta: El fin de las complicaciones</h1>
+                <p>¿Alguna vez has intentado que alguien te pase plata desde otro banco y has terminado enviando fotos de todo? Esos días están llegando a su fin. 🚀</p>
+                <!--  -->
+                <img class="featured-image" src="https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&q=80&w=1200" alt="Pago Digital">
+            </div>
+
+            <!-- Definición -->
+            <div class="slide" id="llave">
+                <span class="slide-tag">Tecnología</span>
+                <h2>1. ¿Qué es eso de la "Llave Digital"? 🤔</h2>
+                <div class="quote-block">
+                    "Imagina que tu cuenta de Nequi es una casa. Tu dirección ahora es simplemente tu número de celular."
+                </div>
+                <p>La Llave es un identificador único que vincula tu identidad con tu depósito en Nequi. Así de simple, así de rápido.</p>
+            </div>
+
+            <!-- Por qué BRE -->
+            <div class="slide" id="bre">
+                <span class="slide-tag">Finanzas</span>
+                <h2>2. ¿Por qué el BRE cambia las reglas del juego?</h2>
+                <p>El BRE (Bajo Valor Relevante) es el sistema que une todas las "carreteras" de los bancos en Colombia.</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div style="background: #fff5f8; padding: 20px; border-radius: 15px;">
+                        <i class="fa-solid fa-bolt" style="color: var(--nequi-magenta); font-size: 24px;"></i>
+                        <h4 style="margin-top: 10px;">Instantáneo</h4>
+                        <p style="font-size: 14px;">Sin esperas de un día hábil.</p>
+                    </div>
+                    <div style="background: #f0fdfc; padding: 20px; border-radius: 15px;">
+                        <i class="fa-solid fa-leaf" style="color: var(--nequi-teal); font-size: 24px;"></i>
+                        <h4 style="margin-top: 10px;">Inclusión</h4>
+                        <p style="font-size: 14px;">Económico para todos.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tutorial -->
+            <div class="slide" id="pasos">
+                <span class="slide-tag">Tutorial</span>
+                <h2>3. Activa tu Llave en Nequi 📲</h2>
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <p style="margin:0">Entra a tu app y ve a <strong>Perfil</strong>.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <p style="margin:0">Selecciona <strong>Ajustes</strong> y luego <strong>Llaves</strong>.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <p style="margin:0">Elige tu número como <strong>Llave Principal</strong> y confirma.</p>
+                </div>
+            </div>
+
+            <!-- Razones -->
+            <div class="slide" id="razones">
+                <span class="slide-tag">Beneficios</span>
+                <h2>4. Tres razones para amarlas 💪</h2>
+                <ul style="list-style: none;">
+                    <li style="margin-bottom: 15px;"><i class="fa-solid fa-check" style="color: var(--nequi-teal);"></i> <strong>Privacidad:</strong> No más números de cuenta a desconocidos.</li>
+                    <li style="margin-bottom: 15px;"><i class="fa-solid fa-check" style="color: var(--nequi-teal);"></i> <strong>Universalidad:</strong> Te encuentran desde cualquier banco.</li>
+                    <li style="margin-bottom: 15px;"><i class="fa-solid fa-check" style="color: var(--nequi-teal);"></i> <strong>Orden:</strong> Tú decides dónde cae la plata.</li>
+                </ul>
+            </div>
+        </main>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="author-box">
+                <div class="author-avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+                <h3>Equipo Nequi</h3>
+                <p style="font-size: 14px;">Haciendo que la plata te alcance para más.</p>
+            </div>
+
+            <div class="related-box">
+                <h4>¡Únete a la revolución!</h4>
+                <p style="font-size: 14px; margin-top: 10px;">Activa tu llave hoy y simplifica tus pagos inmediatos en Colombia.</p>
+                <a href="#" class="cta-button">Ir a la App</a>
+            </div>
+        </aside>
+    </div>
+
+    <footer class="blog-footer">
+        <h2>¿Y tú? 💜</h2>
+        <p>¿Ya registraste tu número o sigues dictando números largos?</p>
+        <div style="margin-top: 20px; font-size: 24px; color: var(--nequi-purple);">
+            <i class="fa-brands fa-instagram" style="margin: 0 10px;"></i>
+            <i class="fa-brands fa-facebook" style="margin: 0 10px;"></i>
+            <i class="fa-brands fa-tiktok" style="margin: 0 10px;"></i>
+        </div>
+    </footer>
+
+    <script>
+        // Lógica de scroll para la barra de progreso
+        window.onscroll = function() {
+            var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            var scrolled = (winScroll / height) * 100;
+            document.getElementById("myBar").style.width = scrolled + "%";
+            
+            // Animación de aparición de diapositivas
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(slide => {
+                const slideTop = slide.getBoundingClientRect().top;
+                if(slideTop < window.innerHeight - 100) {
+                    slide.classList.add('visible');
+                }
+            });
+        };
+    </script>
+</body>
+</html>
